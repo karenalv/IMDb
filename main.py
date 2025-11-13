@@ -1,6 +1,9 @@
 #imports IMDb data from the dowloaded datasets
 #automatically splits the data into train and testing
 from datasets import load_dataset
+import torch
+torch.backends.mps.is_available = lambda: False
+torch.backends.mps.is_built = lambda: False
 imdb = load_dataset("imdb")
 
 #print(imdb["train"][0])
@@ -71,3 +74,31 @@ trainer = Trainer(
     compute_metrics=compute_metrics,
 )
 trainer.train() #trainer
+
+#example text
+text = "This was a masterpiece. Not completely faithful to the books, but enthralling from beginning to end. Might be my favorite of the three."
+
+#shortcut to run program faster
+from transformers import pipeline
+classifier = pipeline("sentiment-analysis", model="stevhliu/my_awesome_model")
+classifier(text)
+
+#OPTIONAL, how to do the inference manually, what the pipeline is doing behind the scenes
+#loads same tokenizer from training, turns text into numebrs
+# from transformers import AutoTokenizer
+#tokenizer = AutoTokenizer.from_pretrained("stevhliu/my_awesome_model")
+#inputs = tokenizer(text, return_tensors="pt")
+
+#not training, model outputs logits=raw prediction scores
+#from transformers import AutoModelForSequenceClassification
+#model = AutoModelForSequenceClassification.from_pretrained("stevhliu/my_awesome_model")
+#with torch.no_grad():
+#    logits = model(**inputs).logits
+
+#finds index of largest score, converts to regular python num, gets human readable label
+#predicted_class_id = logits.argmax().item()
+#model.config.id2label[predicted_class_id]
+
+
+
+
